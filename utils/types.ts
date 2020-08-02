@@ -19,12 +19,35 @@ export interface Timings {
   crossCountry: number;
   total: number;
 }
-export interface Flight {
-  date: string; // TODO: this needs to become a date but we need to handle the conversions
+export class Flight implements FlightInterface {
+  date = new Date();
+  aircraft = { make: "", model: "", ident: "" };
+  route = [];
+  remarks = "";
+  landings = { day: 0, night: 0 };
+  instrumentApproaches = 0;
+  timings = {
+    airplaneSel: 0,
+    airplaneMel: 0,
+    night: 0,
+    actualInstrument: 0,
+    simulatedInstrument: 0,
+    simulator: 0,
+    flightTraining: 0,
+    solo: 0,
+    crossCountry: 0,
+    total: 0,
+  };
+  id = 0;
+}
+
+export interface FlightInterface {
+  date: Date;
   aircraft: Aircraft;
   route: Array<string>;
   remarks: string;
   landings: Landings;
   instrumentApproaches: number;
   timings: Timings;
+  id: number;
 }

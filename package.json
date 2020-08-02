@@ -2,7 +2,7 @@
   "name": "lastlog",
   "version": "0.1.0",
   "private": true,
-  "license" : "BSD-3-Clause",
+  "license": "BSD-3-Clause",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "date-fns": "^2.15.0",
+    "dexie": "^3.0.2",
     "formik": "^2.1.5",
     "next": "9.5.1",
     "react": "16.13.1",

@@ -1,6 +1,5 @@
 import * as React from "react";
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import "../styles/globals.css";
 import Footer from "../components/Footer";
 
@@ -10,13 +9,6 @@ export interface AppProps {
 }
 
 const MyApp: React.FunctionComponent<AppProps> = (props: AppProps) => {
-  React.useEffect(() => {
-    const req = indexedDB.open("lastlog", 1);
-    req.addEventListener("upgradeneeded", (ev) => {
-      const db = req.result;
-      db.createObjectStore("flights");
-    });
-  }, []);
 
   const { Component, pageProps } = props;
   return (

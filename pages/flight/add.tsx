@@ -1,57 +1,95 @@
 import * as React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikProps } from "formik";
 import { Flight } from "../../utils/types";
+import { parseISO, formatISO } from "date-fns";
+import { FlightDb } from "../../api/data";
+import { useRouter } from "next/router";
 
-const getFlight: Flight = (fields: any) => {
-  return {
-    date: fields.date,
-    aircraft: {
-      make: fields.aircraftMake,
-      model: fields.aircraftModel,
-      ident: fields.aircraftIdent,
-    },
-    route: [fields.from, fields.to],
-    remarks: fields.remarks,
-    landings: {
-      day: fields.dayLandings,
-      night: fields.nightLandings,
-    },
-    instrumentApproaches: fields.instrumentApproaches,
-    timings: {
-      airplaneSel: fields.airplaneSel,
-      airplaneMel: fields.airplaneMel,
-      night: fields.night,
-      actualInstrument: fields.actualInstrument,
-      simulatedInstrument: fields.simulatedInstrument,
-      simulator: fields.simulator,
-      flightTraining: fields.flightTraining,
-      solo: fields.solo,
-      crossCountry: fields.crossCountry,
-      total: fields.total,
-    },
-  };
+interface AddFormFields {
+  date: string;
+  aircraftMake: string;
+  aircraftModel: string;
+  aircraftIdent: string;
+  to: string;
+  from: string;
+  remarks: string;
+  dayLandings: string;
+  nightLandings: string;
+  instrumentApproaches: string;
+  airplaneSel: string;
+  airplaneMel: string;
+  night: string;
+  actualInstrument: string;
+  simulatedInstrument: string;
+  simulator: string;
+  flightTraining: string;
+  solo: string;
+  crossCountry: string;
+  total: string;
+}
+
+const getFlight = (fields: AddFormFields): Flight => {
+  const flight = new Flight();
+  flight.date = parseISO(fields.date);
+  flight.aircraft.make = fields.aircraftMake;
+  flight.aircraft.model = fields.aircraftModel;
+  flight.aircraft.ident = fields.aircraftIdent;
+  flight.route = [fields.from, fields.to];
+  flight.remarks = fields.remarks;
+  flight.landings.day = parseInt(fields.dayLandings, 10) || 0;
+  flight.landings.night = parseInt(fields.nightLandings, 10) || 0;
+  flight.instrumentApproaches = parseInt(fields.instrumentApproaches, 10) || 0;
+  flight.timings.airplaneSel = parseFloat(fields.airplaneSel) || 0.0;
+  flight.timings.airplaneMel = parseFloat(fields.airplaneMel) || 0.0;
+  flight.timings.night = parseFloat(fields.night) || 0.0;
+  flight.timings.actualInstrument = parseFloat(fields.actualInstrument) || 0.0;
+  flight.timings.simulatedInstrument =
+    parseFloat(fields.simulatedInstrument) || 0.0;
+  flight.timings.simulator = parseFloat(fields.simulator) || 0.0;
+  flight.timings.flightTraining = parseFloat(fields.flightTraining) || 0.0;
+  flight.timings.solo = parseFloat(fields.solo) || 0.0;
+  flight.timings.crossCountry = parseFloat(fields.crossCountry) || 0.0;
+  flight.timings.total = parseFloat(fields.total) || 0.0;
+  return flight;
 };
 
 const Add: React.FunctionComponent = () => {
-  let addFlight = undefined;
-  React.useEffect(() => {
-    const req = indexedDB.open("lastlog");
-    req.addEventListener("success", () => {
-      const db = req.result;
-      addFlight = (flight) => {
-        const tx = db.transaction(["flights"], "readwrite");
-        const employeeTable = tx.objectStore("flights");
-        employeeTable.put(flight, "blahKey");
-      };
-    });
-  }, []);
+  const router = useRouter();
+  const addFlight = async (flight: Flight) => {
+    const db = new FlightDb();
+    await db.flights.add(flight);
+    router.push("/flight");
+  };
   return (
     <div>
       <h1>Add a Flight</h1>
 
       <Formik
-        initialValues={{ email: "", password: "" }}
-        validate={(values) => {
+        initialValues={{
+          date: formatISO(new Date(), {
+            representation: "date",
+          }),
+          aircraftMake: "",
+          aircraftModel: "",
+          aircraftIdent: "",
+          from: "",
+          to: "",
+          remarks: "",
+          dayLandings: "",
+          nightLandings: "",
+          instrumentApproaches: "",
+          airplaneMel: "",
+          airplaneSel: "",
+          night: "",
+          actualInstrument: "",
+          simulatedInstrument: "",
+          simulator: "",
+          flightTraining: "",
+          solo: "",
+          crossCountry: "",
+          total: "",
+        }}
+        validate={(values: AddFormFields) => {
           const errors = {};
 
           //   if (!values.email) {
@@ -64,16 +102,20 @@ const Add: React.FunctionComponent = () => {
 
           return errors;
         }}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values: AddFormFields) => {
           addFlight(getFlight(values));
-          setSubmitting(false);
         }}
-      >
-        {({ isSubmitting }) => (
+        render={(formikBag: FormikProps<AddFormFields>) => (
           <Form>
             <label>
               Date
-              <Field type="date" name="date" />
+              <Field
+                type="date"
+                name="date"
+                max={formatISO(new Date(), {
+                  representation: "date",
+                })}
+              />
             </label>
             <ErrorMessage name="date" component="div" />
             <label>
@@ -181,12 +223,10 @@ const Add: React.FunctionComponent = () => {
               <Field type="number" min="0" step="0.1" name="total" />
             </label>
             <ErrorMessage name="total" component="div" />
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
+            <button type="submit">Submit</button>
           </Form>
         )}
-      </Formik>
+      />
     </div>
   );
 };

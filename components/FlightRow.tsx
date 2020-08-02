@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Flight } from "../utils/types";
-import { formatISO, parseISO } from "date-fns";
+import { FlightInterface } from "../utils/types";
+import { formatISO } from "date-fns";
 
 interface FlightRowProps {
-  flight: Flight;
+  flight: FlightInterface;
 }
 
 const FlightRow: React.FunctionComponent<FlightRowProps> = (
@@ -13,7 +13,7 @@ const FlightRow: React.FunctionComponent<FlightRowProps> = (
   return (
     <tr>
       <td>
-        {formatISO(parseISO(flight.date || "2020-05-05"), {
+        {formatISO(flight.date, {
           representation: "date",
         })}
       </td>
