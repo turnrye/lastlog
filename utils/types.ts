@@ -20,7 +20,7 @@ export interface Timings {
   total: number;
 }
 export interface Flight {
-  date: Date;
+  date: string; // TODO: this needs to become a date but we need to handle the conversions
   aircraft: Aircraft;
   route: Array<string>;
   remarks: string;

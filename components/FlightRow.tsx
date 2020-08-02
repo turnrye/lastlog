@@ -12,7 +12,11 @@ const FlightRow: React.FunctionComponent<FlightRowProps> = (
   const { flight } = props;
   return (
     <tr>
-      <td>{formatISO(parseISO(flight.date || "2020-05-05"), { representation: "date" })}</td>
+      <td>
+        {formatISO(parseISO(flight.date || "2020-05-05"), {
+          representation: "date",
+        })}
+      </td>
       <td>{flight.aircraft.make}</td>
       <td>{flight.aircraft.model}</td>
       <td className="uppercase">{flight.aircraft.ident}</td>
