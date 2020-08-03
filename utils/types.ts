@@ -22,7 +22,7 @@ export interface Timings {
 export class Flight implements FlightInterface {
   date = new Date();
   aircraft = { make: "", model: "", ident: "" };
-  route = [];
+  route: Array<string> = [];
   remarks = "";
   landings = { day: 0, night: 0 };
   instrumentApproaches = 0;
